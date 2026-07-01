@@ -11,16 +11,14 @@ import {
   Star,
   CheckCircle2,
   X,
-  MessageSquareQuote,
-  Settings
+  MessageSquareQuote
 } from 'lucide-react';
 
 const COMPANY_NAME = "HITECH ELECTRONICS AND APPLIANCES";
 const PRIMARY_PHONE = "+91 72000 12162";
 const WHATSAPP_NUMBER = "917200012162";
-const RADIUS_KM = 20;
+const RADIUS_KM = 5;
 
-// --- LOCALIZED INVENTORY (ABSOLUTE CONTROL) ---
 const SERVICES = [
   { id: 'ac', name: 'AC Repair & Service', image: '/assets/services/ac.jpg' },
   { id: 'tv', name: 'LED / LCD TV Repair', image: '/assets/services/tv.jpg' },
@@ -67,7 +65,6 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // --- GOOGLE ADS CONVERSION TRACKING ---
   const trackConversion = () => {
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'conversion', {
@@ -100,7 +97,7 @@ export default function App() {
         }),
         timeout
       ]);
-      trackConversion(); // Trigger Ads Conversion on successful DB write
+      trackConversion();
     } catch (error) {
       console.error("Database Error or Timeout:", error);
     } finally {
@@ -114,17 +111,11 @@ export default function App() {
   };
 
   const handleWhatsAppRedirect = () => {
-    trackConversion(); // Trigger Ads Conversion on direct WhatsApp click
+    trackConversion();
     const text = selectedService
       ? `Hi, I need an emergency ${selectedService.name} service in Coimbatore.`
       : `Hi, I need an emergency repair service in Coimbatore.`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  const handleTamilWhatsApp = () => {
-    trackConversion(); // Trigger Ads Conversion on direct WhatsApp click
-    const tamilText = "வணக்கம், எனக்கு ஒரு சர்வீஸ் தேவை.";
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(tamilText)}`, '_blank');
   };
 
   const handlePincodeChange = (e) => {
@@ -136,6 +127,7 @@ export default function App() {
     if (val.length === 6) {
       if (val.startsWith('641') || val.startsWith('642')) {
         setLocationVerified(true);
+        setTimeout(() => setBookingModalOpen(true), 800);
       } else {
         setLocationError(`SERVICE DENIED: Outside ${RADIUS_KM}km zone.`);
       }
@@ -153,9 +145,6 @@ export default function App() {
 
       {/* HEADER */}
       <div className="fixed top-0 w-full z-[999]">
-        <div className="bg-emerald-600 text-white text-xs md:text-sm font-semibold py-2 px-4 text-center tracking-wide">
-          🚨 SERVICING {RADIUS_KM}KM RADIUS OF SUNDARAPURAM | CALL NOW FOR FAST REPAIR
-        </div>
         <header className={`w-full transition-all duration-200 bg-slate-950 border-b ${isScrolled ? 'border-emerald-500/20 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)] py-3' : 'border-slate-800 py-4 md:py-5'}`}>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center">
             <div className="flex items-center gap-3 overflow-hidden mr-4 cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
@@ -171,7 +160,7 @@ export default function App() {
               <a href={`tel:${PRIMARY_PHONE}`} className="hidden md:flex items-center gap-2 font-bold text-slate-300 hover:text-white transition" onClick={trackConversion}>
                 <Phone className="w-5 h-5 text-emerald-500" /> {PRIMARY_PHONE}
               </a>
-              <button onClick={() => openBooking(null)} className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 md:px-5 py-2 md:py-2.5 rounded-sm font-bold text-sm md:text-base shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all active:scale-95 uppercase">
+              <button onClick={() => openBooking(null)} className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 md:px-5 py-2 md:py-2.5 rounded-xl font-bold text-sm md:text-base shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all active:scale-95 uppercase">
                 BOOK NOW
               </button>
             </div>
@@ -180,66 +169,57 @@ export default function App() {
       </div>
 
       {/* HERO SECTION */}
-      <section className="relative pt-44 pb-16 md:pt-52 md:pb-32 px-4 sm:px-6 overflow-hidden">
+      <section className="relative pt-32 pb-16 md:pt-40 md:pb-32 px-4 sm:px-6 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-emerald-900/20 via-slate-950 to-slate-950 -z-10"></div>
         <div className="relative z-10 max-w-4xl mx-auto text-center">
 
-          <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-full px-4 py-1.5 mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs md:text-sm font-bold text-slate-300">கோயம்புத்தூரில் அதிவேக சேவை</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-4 leading-[1.1]">
-            FASTEST APPLIANCE <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">REPAIR.</span><br />
-            IN COIMBATORE.
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-4 leading-[1.1] text-white">
+            Fastest Appliance <span className="text-emerald-400">Repair.</span><br />
+            In Coimbatore.
           </h1>
-
-          <p className="text-emerald-400 font-bold text-lg md:text-xl mb-6">
-            உங்கள் வீட்டு உபயோகப் பொருட்கள், எங்கள் பொறுப்பு.
-          </p>
 
           <p className="text-base sm:text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto font-medium">
             Expert technician fix all major home appliances. Fast, reliable service within {RADIUS_KM}km of Sundarapuram.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button onClick={() => openBooking(null)} className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-base md:text-lg px-8 py-4 rounded-sm font-bold flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] uppercase tracking-wide">
+            <button onClick={() => openBooking(null)} className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-base md:text-lg px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] uppercase tracking-wide">
               Request Technician <ChevronRight className="w-5 h-5" />
             </button>
-            <button onClick={handleWhatsAppRedirect} className="w-full sm:w-auto bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/30 text-base md:text-lg px-8 py-4 rounded-sm font-bold flex items-center justify-center gap-2 transition-all">
+            <button onClick={handleWhatsAppRedirect} className="w-full sm:w-auto bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/30 text-base md:text-lg px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
               WhatsApp Us Fast
             </button>
           </div>
 
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 border-y border-slate-800 py-6 text-left">
             <div className="flex items-center gap-3">
-              <Clock className="text-emerald-500 w-8 h-8 shrink-0" />
+              <Clock className="text-emerald-500 w-5 h-5 shrink-0" />
               <div><div className="font-bold text-white">60 Min</div><div className="text-xs text-slate-400">Arrival Time</div></div>
             </div>
             <div className="flex items-center gap-3">
-              <ShieldCheck className="text-emerald-500 w-8 h-8 shrink-0" />
+              <ShieldCheck className="text-emerald-500 w-5 h-5 shrink-0" />
               <div><div className="font-bold text-white">90 Days</div><div className="text-xs text-slate-400">Service Warranty</div></div>
             </div>
-            <div onClick={() => setReviewsModalOpen(true)} className="flex items-center gap-3 cursor-pointer group p-2 -m-2 rounded-sm hover:bg-slate-900 transition-colors">
-              <Star className="text-emerald-500 w-8 h-8 fill-emerald-500 shrink-0 group-hover:scale-110 transition-transform" />
+            <div onClick={() => setReviewsModalOpen(true)} className="flex items-center gap-3 cursor-pointer group p-2 -m-2 rounded-xl hover:bg-slate-900 transition-colors">
+              <Star className="text-emerald-500 w-5 h-5 fill-emerald-500 shrink-0 group-hover:scale-110 transition-transform" />
               <div>
                 <div className="font-bold text-white flex items-center gap-1">4.2/5 <ChevronRight className="w-4 h-4 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity -ml-2 group-hover:ml-0" /></div>
                 <div className="text-xs text-slate-400 group-hover:text-emerald-400 transition-colors">See Reviews</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <MapPin className="text-emerald-500 w-8 h-8 shrink-0" />
+              <MapPin className="text-emerald-500 w-5 h-5 shrink-0" />
               <div><div className="font-bold text-white">100% Local</div><div className="text-xs text-slate-400">Coimbatore Based</div></div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- DIRECT CATALOG UI (Clear Images, Text Below) --- */}
+      {/* --- DIRECT CATALOG UI --- */}
       <section className="py-20 bg-slate-900 border-t border-slate-800 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-10 text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-2 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 text-white">
               Select Appliance
             </h2>
             <p className="text-slate-400 text-sm md:text-base">Tap on any service below to dispatch a technician immediately.</p>
@@ -252,8 +232,7 @@ export default function App() {
                 onClick={() => openBooking(srv)}
                 className="group cursor-pointer flex flex-col"
               >
-                {/* 100% Clear Image Container with Fallback */}
-                <div className="w-full aspect-square md:aspect-[4/3] rounded-sm overflow-hidden bg-slate-800 mb-3 border border-slate-700 group-hover:border-emerald-500 transition-colors">
+                <div className="w-full aspect-square md:aspect-[4/3] rounded-xl overflow-hidden bg-slate-800 mb-3 border border-slate-700 group-hover:border-emerald-500 transition-colors">
                   <img
                     src={srv.image}
                     alt={srv.name}
@@ -264,7 +243,6 @@ export default function App() {
                     }}
                   />
                 </div>
-                {/* Shrunk, clear typography placed below the image */}
                 <h3 className="text-sm md:text-base font-bold text-slate-300 group-hover:text-emerald-400 transition-colors text-center">
                   {srv.name}
                 </h3>
@@ -279,11 +257,11 @@ export default function App() {
         <div className="absolute inset-y-0 left-0 w-1/2 bg-slate-900/50 -skew-x-12 -z-10 transform origin-top-left"></div>
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 items-stretch">
 
-          <div className="w-full lg:w-1/2 bg-slate-900 border border-slate-700 rounded-sm overflow-hidden flex flex-col shadow-2xl relative">
+          <div className="w-full lg:w-1/2 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col shadow-[0_8px_30px_rgb(0,0,0,0.4)] relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500 z-10"></div>
             <div className="p-4 md:p-6 border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm absolute top-0 w-full z-10">
-              <h2 className="text-xl md:text-2xl font-black uppercase flex items-center gap-2 text-white">
-                <MapPin className="text-emerald-500 w-6 h-6 shrink-0" /> {RADIUS_KM}KM FROM SUNDARAPURAM
+              <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2 text-white">
+                <MapPin className="text-emerald-500 w-6 h-6 shrink-0" /> {RADIUS_KM}km From Sundarapuram
               </h2>
             </div>
             <div className="flex-1 w-full bg-slate-800 min-h-[400px] relative">
@@ -291,8 +269,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className="w-full lg:w-1/2 bg-slate-900 border border-slate-700 p-6 md:p-10 rounded-sm shadow-2xl relative">
-            <h2 className="text-2xl md:text-3xl font-black uppercase mb-4">Check Your Area</h2>
+          <div className="w-full lg:w-1/2 bg-slate-900 border border-slate-800 p-6 md:p-10 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.4)] relative">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Check Your Area</h2>
             <p className="text-slate-400 mb-6 text-sm md:text-base leading-relaxed">
               We provide quick service in <strong className="text-white">Coimbatore city and up to {RADIUS_KM}km around Sundarapuram</strong>.
             </p>
@@ -300,13 +278,13 @@ export default function App() {
             {!locationVerified ? (
               <form onSubmit={verifyLocationSubmit} className="flex flex-col gap-3 mb-8">
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Enter Pincode (e.g. 641024)" className={`flex-1 bg-slate-950 border p-3 text-white focus:outline-none font-mono transition-colors ${locationError ? 'border-red-500' : 'border-slate-700 focus:border-emerald-500'}`} maxLength={6} value={pinCode} onChange={handlePincodeChange} />
-                  <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 font-bold uppercase tracking-wide">Check</button>
+                  <input type="text" placeholder="Enter Pincode (e.g. 641024)" className={`flex-1 bg-slate-950 border p-3 text-white focus:outline-none font-mono transition-colors rounded-xl ${locationError ? 'border-red-500' : 'border-slate-700 focus:border-emerald-500'}`} maxLength={6} value={pinCode} onChange={handlePincodeChange} />
+                  <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 font-bold uppercase tracking-wide rounded-xl">Check</button>
                 </div>
-                {locationError && <div className="text-red-400 text-sm font-bold flex items-center gap-2 bg-red-500/10 border border-red-500/20 p-3 rounded-sm animate-in fade-in"><X className="w-5 h-5 shrink-0" /> {locationError}</div>}
+                {locationError && <div className="text-red-400 text-sm font-bold flex items-center gap-2 bg-red-500/10 border border-red-500/20 p-3 rounded-xl animate-in fade-in"><X className="w-5 h-5 shrink-0" /> {locationError}</div>}
               </form>
             ) : (
-              <div className="flex items-center gap-3 bg-emerald-500/10 text-emerald-400 p-4 border border-emerald-500/30 rounded-sm animate-in fade-in mb-8">
+              <div className="flex items-center gap-3 bg-emerald-500/10 text-emerald-400 p-4 border border-emerald-500/30 rounded-xl animate-in fade-in mb-8">
                 <CheckCircle2 className="w-6 h-6 shrink-0" />
                 <div><span className="block font-bold">Location Verified.</span><span className="text-sm">You are in our zone.</span></div>
               </div>
@@ -344,30 +322,24 @@ export default function App() {
         </div>
       </footer>
 
-      {/* --- FLOATING WHATSAPP BADGE (MOBILE ONLY, TAMIL INTENT) --- */}
-      <button
-        onClick={handleTamilWhatsApp}
-        className="fixed md:hidden bottom-20 right-4 z-[90] bg-[#25D366] text-white p-3 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.5)] animate-bounce hover:animate-none active:scale-95 transition-all"
-        aria-label="Contact on WhatsApp"
-      >
-        <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-          <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.265 2.005.77 2.879l-.816 2.982 3.05-.801a5.727 5.727 0 002.764.712h.001c3.181 0 5.767-2.586 5.767-5.766 0-3.18-2.586-5.767-5.767-5.767m3.155 8.169c-.173.486-.988.948-1.378 1.006-.35.053-.836.143-2.428-.518-1.928-.799-3.167-2.761-3.264-2.89-.098-.129-.778-1.036-.778-1.975 0-.94.485-1.403.658-1.583.173-.18.376-.225.503-.225.129 0 .257.001.368.006.115.006.27-.044.422.324.158.384.538 1.316.586 1.411.047.096.079.208.016.336-.063.129-.095.208-.189.324-.095.115-.202.251-.285.35-.088.106-.182.223-.08.399.102.177.454.752.978 1.219.675.602 1.237.79 1.415.885.177.095.281.08.384-.038.106-.118.455-.53.576-.713.123-.183.242-.152.404-.092.164.061 1.036.488 1.213.577.177.088.295.142.338.223.044.08.044.465-.129.951" />
-          <path d="M12.031 2C6.495 2 2 6.495 2 12.032c0 1.764.463 3.485 1.341 5.005L2 22l5.097-1.336A9.953 9.953 0 0012.031 22c5.535 0 9.999-4.464 9.999-10.001S17.566 2 12.031 2m0 18.238a8.214 8.214 0 01-4.2-1.155l-.302-.179-3.12.818.835-3.043-.197-.313A8.21 8.21 0 013.763 12.03c0-4.557 3.708-8.265 8.268-8.265 4.557 0 8.265 3.708 8.265 8.265 0 4.556-3.708 8.265-8.265 8.265" />
-        </svg>
-      </button>
-
       {/* --- FLOATING CTA BAR (MOBILE) --- */}
       <div className="fixed bottom-0 left-0 w-full md:hidden flex z-[80] shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
-        <a href={`tel:${PRIMARY_PHONE}`} className="flex-1 bg-slate-900 border-t border-slate-800 text-white font-bold py-4 flex justify-center items-center gap-2" onClick={trackConversion}><Phone className="w-5 h-5 text-emerald-500" /> CALL</a>
-        <button onClick={openBooking} className="flex-1 bg-emerald-600 text-white font-bold py-4 flex justify-center items-center gap-2">BOOK NOW</button>
+        <button onClick={handleWhatsAppRedirect} className="w-1/2 bg-[#25D366] text-white font-bold py-4 flex justify-center items-center gap-2 transition-colors active:bg-[#1EBE5D]">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766 0 1.015.265 2.005.77 2.879l-.816 2.982 3.05-.801a5.727 5.727 0 002.764.712h.001c3.181 0 5.767-2.586 5.767-5.766 0-3.18-2.586-5.767-5.767-5.767m3.155 8.169c-.173.486-.988.948-1.378 1.006-.35.053-.836.143-2.428-.518-1.928-.799-3.167-2.761-3.264-2.89-.098-.129-.778-1.036-.778-1.975 0-.94.485-1.403.658-1.583.173-.18.376-.225.503-.225.129 0 .257.001.368.006.115.006.27-.044.422.324.158.384.538 1.316.586 1.411.047.096.079.208.016.336-.063.129-.095.208-.189.324-.095.115-.202.251-.285.35-.088.106-.182.223-.08.399.102.177.454.752.978 1.219.675.602 1.237.79 1.415.885.177.095.281.08.384-.038.106-.118.455-.53.576-.713.123-.183.242-.152.404-.092.164.061 1.036.488 1.213.577.177.088.295.142.338.223.044.08.044.465-.129.951" />
+            <path d="M12.031 2C6.495 2 2 6.495 2 12.032c0 1.764.463 3.485 1.341 5.005L2 22l5.097-1.336A9.953 9.953 0 0012.031 22c5.535 0 9.999-4.464 9.999-10.001S17.566 2 12.031 2m0 18.238a8.214 8.214 0 01-4.2-1.155l-.302-.179-3.12.818.835-3.043-.197-.313A8.21 8.21 0 013.763 12.03c0-4.557 3.708-8.265 8.268-8.265 4.557 0 8.265 3.708 8.265 8.265 0 4.556-3.708 8.265-8.265 8.265" />
+          </svg>
+          WHATSAPP
+        </button>
+        <a href={`tel:${PRIMARY_PHONE}`} className="w-1/2 bg-slate-900 border-t border-slate-800 text-white font-bold py-4 flex justify-center items-center gap-2 transition-colors active:bg-slate-800" onClick={trackConversion}><Phone className="w-5 h-5 text-emerald-500" /> CALL</a>
       </div>
 
       {/* --- REVIEWS MODAL --- */}
       {reviewsModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-sm overflow-hidden animate-in fade-in zoom-in duration-200 shadow-2xl">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-xl overflow-hidden animate-in fade-in zoom-in duration-200 shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
             <div className="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center">
-              <div className="flex items-center gap-2"><MessageSquareQuote className="w-6 h-6 text-emerald-500" /><h3 className="text-lg font-black uppercase">Verified Reviews</h3></div>
+              <div className="flex items-center gap-2"><MessageSquareQuote className="w-6 h-6 text-emerald-500" /><h3 className="text-lg font-bold">Verified Reviews</h3></div>
               <button onClick={() => setReviewsModalOpen(false)} className="text-slate-400 hover:text-white"><X className="w-6 h-6" /></button>
             </div>
             <div className="p-6 max-h-[70vh] overflow-y-auto space-y-4">
@@ -379,13 +351,13 @@ export default function App() {
                 </div>
               </div>
               {REVIEWS.map((review) => (
-                <div key={review.id} className="bg-slate-950 border border-slate-800 p-4 rounded-sm">
+                <div key={review.id} className="bg-slate-950 border border-slate-800 p-4 rounded-xl">
                   <div className="flex justify-between items-start mb-2"><span className="font-bold text-white text-sm">{review.name}</span><span className="text-xs text-slate-500">{review.date}</span></div>
                   <div className="flex gap-1 mb-3">{[...Array(5)].map((_, i) => (<Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-slate-700 fill-slate-700'}`} />))}</div>
                   <p className="text-slate-300 text-sm leading-relaxed">"{review.text}"</p>
                 </div>
               ))}
-              <a href="https://www.sulekha.com/profile/hi-tech-electronics-home-appliances-sundarapuram-coimbatore" target="_blank" rel="noopener noreferrer" className="mt-6 flex items-center justify-center gap-2 w-full bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:bg-slate-900 text-white font-bold py-3 rounded-sm transition-all shadow-lg">
+              <a href="https://www.sulekha.com/profile/hi-tech-electronics-home-appliances-sundarapuram-coimbatore" target="_blank" rel="noopener noreferrer" className="mt-6 flex items-center justify-center gap-2 w-full bg-slate-950 border border-slate-700 hover:border-emerald-500 hover:bg-slate-900 text-white font-bold py-3 rounded-xl transition-all shadow-lg">
                 Check Sulekha <ChevronRight className="w-4 h-4 text-emerald-500" />
               </a>
             </div>
@@ -396,14 +368,14 @@ export default function App() {
       {/* --- BOOKING MODAL --- */}
       {bookingModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-sm overflow-hidden animate-in fade-in zoom-in duration-200 mt-10 md:mt-0 shadow-2xl">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-xl overflow-hidden animate-in fade-in zoom-in duration-200 mt-10 md:mt-0 shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
             <div className="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center">
-              <h3 className="text-lg md:text-xl font-black uppercase">Book Your Repair</h3>
+              <h3 className="text-lg md:text-xl font-bold">Book Your Repair</h3>
               <button onClick={() => setBookingModalOpen(false)} className="text-slate-400 hover:text-white"><X className="w-6 h-6" /></button>
             </div>
             <div className="p-4 md:p-6 max-h-[80vh] overflow-y-auto">
               {selectedService && (
-                <div className="mb-6 bg-slate-800/50 p-3 md:p-4 rounded-sm border border-slate-700 flex items-center gap-4">
+                <div className="mb-6 bg-slate-800/50 p-3 md:p-4 rounded-xl border border-slate-700 flex items-center gap-4">
                   <div>
                     <div className="text-xs text-slate-400 uppercase font-bold tracking-wider">Selected Service</div>
                     <div className="text-base md:text-lg font-bold text-white">{selectedService.name}</div>
@@ -416,7 +388,7 @@ export default function App() {
                   <input
                     type="text"
                     required
-                    className="w-full bg-slate-950 border border-slate-700 p-3 text-white focus:outline-none focus:border-emerald-500 rounded-sm"
+                    className="w-full bg-slate-950 border border-slate-700 p-3 text-white focus:outline-none focus:border-emerald-500 rounded-xl"
                     placeholder="e.g. Ramesh"
                     value={bookingData.name}
                     onChange={(e) => setBookingData({ ...bookingData, name: e.target.value })}
@@ -427,7 +399,7 @@ export default function App() {
                   <input
                     type="tel"
                     required
-                    className="w-full bg-slate-950 border border-slate-700 p-3 text-white focus:outline-none focus:border-emerald-500 rounded-sm"
+                    className="w-full bg-slate-950 border border-slate-700 p-3 text-white focus:outline-none focus:border-emerald-500 rounded-xl"
                     placeholder="+91 XXXXX XXXXX"
                     value={bookingData.phone}
                     onChange={(e) => setBookingData({ ...bookingData, phone: e.target.value })}
@@ -438,7 +410,7 @@ export default function App() {
                   <input
                     type="text"
                     required
-                    className="w-full bg-slate-950 border border-slate-700 p-3 text-white focus:outline-none focus:border-emerald-500 rounded-sm"
+                    className="w-full bg-slate-950 border border-slate-700 p-3 text-white focus:outline-none focus:border-emerald-500 rounded-xl"
                     placeholder="Sundarapuram, 641024"
                     value={bookingData.address}
                     onChange={(e) => setBookingData({ ...bookingData, address: e.target.value })}
@@ -447,7 +419,7 @@ export default function App() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-800 disabled:cursor-not-allowed text-slate-950 font-black text-base md:text-lg py-3 md:py-4 mt-4 uppercase tracking-wide rounded-sm transition-colors"
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-800 disabled:cursor-not-allowed text-slate-950 font-black text-base md:text-lg py-3 md:py-4 mt-4 uppercase tracking-wide rounded-xl transition-colors"
                 >
                   {isSubmitting ? "Sending..." : "Send Technician Now"}
                 </button>
