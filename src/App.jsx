@@ -83,31 +83,29 @@ export default function App() {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), 5000)
-    );
+    // Track conversion immediately
+    trackConversion();
 
+    // Open WhatsApp synchronously to prevent popup blockers
+    const text = `Hi, I am ${bookingData.name}. I need an emergency ${selectedService?.name || 'repair'} service at ${bookingData.address}. Coimbatore.`;
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, '_blank');
+
+    // Fire and forget Firebase tracking
     try {
-      await Promise.race([
-        addDoc(collection(db, "leads"), {
-          ...bookingData,
-          service: selectedService?.name || "General Inquiry",
-          timestamp: serverTimestamp(),
-          source: window.location.hostname
-        }),
-        timeout
-      ]);
-      trackConversion();
+      addDoc(collection(db, "leads"), {
+        ...bookingData,
+        service: selectedService?.name || "General Inquiry",
+        timestamp: serverTimestamp(),
+        source: window.location.hostname
+      });
     } catch (error) {
-      console.error("Database Error or Timeout:", error);
-    } finally {
-      const text = `Hi, I am ${bookingData.name}. I need an emergency ${selectedService?.name || 'repair'} service at ${bookingData.address}. Coimbatore.`;
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
-
-      setIsSubmitting(false);
-      setBookingModalOpen(false);
-      setBookingData({ name: '', phone: '', address: '' });
+      console.error("Database Error:", error);
     }
+
+    setIsSubmitting(false);
+    setBookingModalOpen(false);
+    setBookingData({ name: '', phone: '', address: '' });
   };
 
   const handleWhatsAppRedirect = () => {
@@ -148,7 +146,7 @@ export default function App() {
         <header className={`w-full transition-all duration-200 bg-slate-950 border-b ${isScrolled ? 'border-emerald-500/20 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)] py-3' : 'border-slate-800 py-4 md:py-5'}`}>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center">
             <div className="flex items-center gap-3 overflow-hidden mr-4 cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
-              <div style={{ display: 'none' }} className="items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Zap className="w-6 h-6 text-emerald-500 shrink-0" />
                 <span className="text-lg md:text-xl font-black tracking-tighter text-white uppercase truncate">
                   <span className="md:hidden">HITECH REPAIRS</span>
