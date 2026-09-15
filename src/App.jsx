@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from './firebase';
 import {
   Phone,
   MapPin,
@@ -11,23 +9,43 @@ import {
   Star,
   CheckCircle2,
   X,
-  MessageSquareQuote
+  MessageSquareQuote,
+  Mail,
+  FileText
 } from 'lucide-react';
 
 const COMPANY_NAME = "HITECH ELECTRONICS AND APPLIANCES";
 const PRIMARY_PHONE = "+91 72000 12162";
+const EMAIL_ADDRESS = "info@hitechelectronics.in";
+const PHYSICAL_ADDRESS = "10S/12A, Rangaswamy Colony, Sundarapuram, Coimbatore, Tamil Nadu 641024";
 const WHATSAPP_NUMBER = "917200012162";
 const RADIUS_KM = 5;
 
 const SERVICES = [
-  { id: 'ac', name: 'AC Repair & Service', image: '/assets/services/ac.jpg' },
-  { id: 'tv', name: 'LED / LCD TV Repair', image: '/assets/services/tv.jpg' },
-  { id: 'wm', name: 'Washing Machine', image: '/assets/services/wm.jpg' },
-  { id: 'fridge', name: 'Refrigerator', image: '/assets/services/fridge.jpg' },
-  { id: 'micro', name: 'Microwave Oven', image: '/assets/services/micro.jpg' },
-  { id: 'ro', name: 'Water Purifier (RO)', image: '/assets/services/ro.jpg' },
-  { id: 'geyser', name: 'Water Heater / Geyser', image: '/assets/services/geyser.jpg' },
-  { id: 'electrical', name: 'Electrical Works', image: '/assets/services/electrical.jpg' },
+  { 
+    id: 'wm', 
+    name: 'Washing Machine Repair', 
+    image: '/assets/services/wm.jpg',
+    desc: 'Resolving drum spin failure, excessive vibration, drainage clogs, and control board error codes for top-load and front-load models. We inspect motor belts, water inlet valves, and seals to guarantee smooth and leak-free operation.'
+  },
+  { 
+    id: 'fridge', 
+    name: 'Refrigerator Repair', 
+    image: '/assets/services/fridge.jpg',
+    desc: 'Fixing cooling inconsistencies, eco-friendly refrigerant gas refilling, thermostat calibration, and defrost timer errors. We provide rapid on-site compressor repairs to protect your food supply and minimize household disruption.'
+  },
+  { 
+    id: 'micro', 
+    name: 'Microwave Oven Repair', 
+    image: '/assets/services/micro.jpg',
+    desc: 'Repairing heating magnetrons, turntable motor failures, blown high-voltage fuses, and unresponsive touch keypads. Every repair includes safety radiation leak checks to ensure your kitchen appliance is completely secure for daily use.'
+  },
+  { 
+    id: 'ro', 
+    name: 'Water Purifier (RO) Service', 
+    image: '/assets/services/ro.jpg',
+    desc: 'Comprehensive multi-stage filter replacement, booster pump repair, and precise TDS balancing for healthy drinking water. We perform sanitization of internal storage tanks and pipe networks to ensure your pure water supply.'
+  }
 ];
 
 const LOCATIONS = [
@@ -48,6 +66,7 @@ export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [reviewsModalOpen, setReviewsModalOpen] = useState(false);
+  const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [locationVerified, setLocationVerified] = useState(false);
   const [locationError, setLocationError] = useState('');
@@ -78,30 +97,16 @@ export default function App() {
     setBookingModalOpen(true);
   };
 
-  const handleBookingSubmit = async (e) => {
+  const handleBookingSubmit = (e) => {
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    // Track conversion immediately
     trackConversion();
 
-    // Open WhatsApp synchronously to prevent popup blockers
-    const text = `Hi, I am ${bookingData.name}. I need an emergency ${selectedService?.name || 'repair'} service at ${bookingData.address}. Coimbatore.`;
+    const text = `Hi, I am ${bookingData.name}. I need an emergency ${selectedService?.name || 'repair'} service at ${bookingData.address}, Coimbatore.`;
     const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
     window.open(waUrl, '_blank');
-
-    // Fire and forget Firebase tracking
-    try {
-      addDoc(collection(db, "leads"), {
-        ...bookingData,
-        service: selectedService?.name || "General Inquiry",
-        timestamp: serverTimestamp(),
-        source: window.location.hostname
-      });
-    } catch (error) {
-      console.error("Database Error:", error);
-    }
 
     setIsSubmitting(false);
     setBookingModalOpen(false);
@@ -141,8 +146,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500 selection:text-white pb-20 md:pb-0 relative">
 
-      {/* HEADER */}
-      <div className="fixed top-0 w-full z-[999]">
+      {}
+      <div className="fixed top-0 w-full z-[900]">
         <header className={`w-full transition-all duration-200 bg-slate-950 border-b ${isScrolled ? 'border-emerald-500/20 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)] py-3' : 'border-slate-800 py-4 md:py-5'}`}>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 flex justify-between items-center">
             <div className="flex items-center gap-3 overflow-hidden mr-4 cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
@@ -166,7 +171,7 @@ export default function App() {
         </header>
       </div>
 
-      {/* HERO SECTION */}
+      {}
       <section className="relative pt-32 pb-16 md:pt-40 md:pb-32 px-4 sm:px-6 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-emerald-900/20 via-slate-950 to-slate-950 -z-10"></div>
         <div className="relative z-10 max-w-4xl mx-auto text-center">
@@ -177,7 +182,7 @@ export default function App() {
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto font-medium">
-            Expert technician fix all major home appliances. Fast, reliable service within {RADIUS_KM}km of Sundarapuram.
+            Certified technicians for prompt on-site home appliance repair within {RADIUS_KM}km of Sundarapuram, Coimbatore.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -213,44 +218,55 @@ export default function App() {
         </div>
       </section>
 
-      {/* --- DIRECT CATALOG UI --- */}
+      {}
       <section className="py-20 bg-slate-900 border-t border-slate-800 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-10 text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 text-white">
-              Select Appliance
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-white">
+              Appliance Repair Services
             </h2>
-            <p className="text-slate-400 text-sm md:text-base">Tap on any service below to dispatch a technician immediately.</p>
+            <p className="text-slate-400 text-base md:text-lg max-w-3xl">
+              Tap on any service below to dispatch a technician immediately. Our expert team follows strict diagnostic procedures to ensure long-lasting repairs.
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {SERVICES.map((srv) => (
               <div
                 key={srv.id}
                 onClick={() => openBooking(srv)}
-                className="group cursor-pointer flex flex-col"
+                className="group cursor-pointer flex flex-col bg-slate-950 rounded-xl overflow-hidden border border-slate-800 hover:border-emerald-500 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)] hover:-translate-y-1"
               >
-                <div className="w-full aspect-square md:aspect-[4/3] rounded-xl overflow-hidden bg-slate-800 mb-3 border border-slate-700 group-hover:border-emerald-500 transition-colors">
+                <div className="w-full aspect-[4/3] bg-slate-800 overflow-hidden relative">
                   <img
                     src={srv.image}
                     alt={srv.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 400 300"><rect width="400" height="300" fill="%230f172a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="%23334155">ASSET REQUIRED</text></svg>';
+                      e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 400 300"><rect width="400" height="300" fill="%230f172a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="%23334155">SERVICE IMAGE</text></svg>';
                     }}
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
                 </div>
-                <h3 className="text-sm md:text-base font-bold text-slate-300 group-hover:text-emerald-400 transition-colors text-center">
-                  {srv.name}
-                </h3>
+                <div className="p-5 flex-1 flex flex-col">
+                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                    {srv.name}
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed mb-4 flex-1">
+                    {srv.desc}
+                  </p>
+                  <div className="flex items-center text-emerald-500 text-sm font-bold uppercase tracking-wide">
+                    Book Service <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* --- MAP SECTION --- */}
+      {}
       <section className="py-16 md:py-20 bg-slate-950 px-4 sm:px-6 relative overflow-hidden">
         <div className="absolute inset-y-0 left-0 w-1/2 bg-slate-900/50 -skew-x-12 -z-10 transform origin-top-left"></div>
         <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 items-stretch">
@@ -302,25 +318,60 @@ export default function App() {
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
-      <footer className="bg-slate-950 border-t border-slate-900 py-12 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Zap className="w-6 h-6 text-slate-600" />
-            <span className="text-lg font-black tracking-tighter text-slate-600 uppercase">{COMPANY_NAME}</span>
+      {}
+      <footer className="bg-slate-950 border-t border-slate-900 pt-16 pb-24 md:pb-12 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-6 mb-12">
+          
+          <div className="md:col-span-4 flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <Zap className="w-6 h-6 text-emerald-500" />
+              <span className="text-lg font-black tracking-tighter text-white uppercase">{COMPANY_NAME}</span>
+            </div>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Expert, fast, and reliable appliance repair services across Coimbatore. We are a locally operated business committed to transparent pricing and high-quality repairs.
+            </p>
           </div>
-          <div className="flex flex-col items-center md:items-end gap-2">
-            <p className="text-slate-500 text-xs md:text-sm text-center md:text-right">© {new Date().getFullYear()} {COMPANY_NAME}. Based in Sundarapuram, Coimbatore.</p>
-            <a href="https://srinicorp.com" target="_blank" rel="noopener noreferrer" className="mt-2 flex items-center gap-2 text-xs text-slate-600 hover:text-slate-400 transition-colors group">
+
+          <div className="md:col-span-5 flex flex-col gap-4">
+            <h4 className="text-white font-bold tracking-wide uppercase text-sm">Contact Information</h4>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                <span className="text-slate-300 text-sm leading-relaxed">{PHYSICAL_ADDRESS}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="w-5 h-5 text-emerald-500 shrink-0" />
+                <a href={`tel:${PRIMARY_PHONE}`} className="text-slate-300 hover:text-emerald-400 text-sm transition-colors">{PRIMARY_PHONE}</a>
+              </div>
+              <div className="flex items-center gap-3">
+                <Mail className="w-5 h-5 text-emerald-500 shrink-0" />
+                <a href={`mailto:${EMAIL_ADDRESS}`} className="text-slate-300 hover:text-emerald-400 text-sm transition-colors">{EMAIL_ADDRESS}</a>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-3 flex flex-col gap-4 md:items-end">
+            <h4 className="text-white font-bold tracking-wide uppercase text-sm">Legal & Links</h4>
+            <div className="flex flex-col gap-2 md:items-end">
+              <button onClick={() => setPrivacyPolicyOpen(true)} className="text-slate-400 hover:text-emerald-400 text-sm transition-colors flex items-center gap-2">
+                <FileText className="w-4 h-4" /> Privacy Policy
+              </button>
+            </div>
+          </div>
+
+        </div>
+        
+        <div className="max-w-6xl mx-auto border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+           <p className="text-slate-600 text-xs md:text-sm text-center md:text-left">© {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.</p>
+           <a href="https://srinicorp.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-slate-600 hover:text-slate-400 transition-colors group">
               <span className="uppercase tracking-widest font-semibold text-[10px]">Powered by</span>
               <img src="/assets/logo.png" alt="Srinicorp" className="h-4 opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling.style.display = 'inline'; }} />
               <span style={{ display: 'none' }} className="font-bold tracking-wider text-slate-500 group-hover:text-emerald-500 transition-colors">SRINICORP.COM</span>
             </a>
-          </div>
         </div>
       </footer>
 
-      {/* --- FLOATING CTA BAR (MOBILE) --- */}
+      {}
       <div className="fixed bottom-0 left-0 w-full md:hidden flex z-[80] shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
         <button onClick={handleWhatsAppRedirect} className="w-1/2 bg-[#25D366] text-white font-bold py-4 flex justify-center items-center gap-2 transition-colors active:bg-[#1EBE5D]">
           <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -332,15 +383,70 @@ export default function App() {
         <a href={`tel:${PRIMARY_PHONE}`} className="w-1/2 bg-slate-900 border-t border-slate-800 text-white font-bold py-4 flex justify-center items-center gap-2 transition-colors active:bg-slate-800" onClick={trackConversion}><Phone className="w-5 h-5 text-emerald-500" /> CALL</a>
       </div>
 
-      {/* --- REVIEWS MODAL --- */}
+      {}
+      {privacyPolicyOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-xl overflow-hidden animate-in fade-in zoom-in duration-200 shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex flex-col max-h-[90vh]">
+            <div className="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
+              <div className="flex items-center gap-2">
+                <FileText className="w-6 h-6 text-emerald-500" />
+                <h3 className="text-lg font-bold">Privacy Policy</h3>
+              </div>
+              <button onClick={() => setPrivacyPolicyOpen(false)} className="text-slate-400 hover:text-white transition-colors p-1"><X className="w-6 h-6" /></button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto space-y-6 text-slate-300 text-sm leading-relaxed">
+              <p><strong>Last Updated:</strong> {new Date().toLocaleDateString()}</p>
+              
+              <div>
+                <h4 className="text-white font-bold mb-2 text-base">1. Information We Collect</h4>
+                <p>When you request a service, we collect basic personal information necessary to fulfill your request. This includes your Name, Phone Number, and physical Service Address / Pincode.</p>
+              </div>
+
+              <div>
+                <h4 className="text-white font-bold mb-2 text-base">2. How We Use Your Information</h4>
+                <p>We use the collected information exclusively to:</p>
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li>Dispatch technicians to your location for appliance repair.</li>
+                  <li>Communicate with you regarding your service appointment.</li>
+                  <li>Improve our customer service and response times.</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-white font-bold mb-2 text-base">3. Data Sharing and Protection</h4>
+                <p>We are committed to securing your data. We <strong>do not</strong> sell, rent, or trade your personal information to third parties. Data is only shared with our employed technicians assigned to your service request.</p>
+              </div>
+
+              <div>
+                <h4 className="text-white font-bold mb-2 text-base">4. Contact Us</h4>
+                <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+                <ul className="mt-2 space-y-1">
+                  <li><strong>Email:</strong> {EMAIL_ADDRESS}</li>
+                  <li><strong>Phone:</strong> {PRIMARY_PHONE}</li>
+                  <li><strong>Address:</strong> {PHYSICAL_ADDRESS}</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="bg-slate-950 p-4 border-t border-slate-800 flex justify-end shrink-0">
+              <button onClick={() => setPrivacyPolicyOpen(false)} className="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-lg font-bold transition-colors">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {}
       {reviewsModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-xl overflow-hidden animate-in fade-in zoom-in duration-200 shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
-            <div className="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-xl overflow-hidden animate-in fade-in zoom-in duration-200 shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex flex-col max-h-[90vh]">
+            <div className="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
               <div className="flex items-center gap-2"><MessageSquareQuote className="w-6 h-6 text-emerald-500" /><h3 className="text-lg font-bold">Verified Reviews</h3></div>
-              <button onClick={() => setReviewsModalOpen(false)} className="text-slate-400 hover:text-white"><X className="w-6 h-6" /></button>
+              <button onClick={() => setReviewsModalOpen(false)} className="text-slate-400 hover:text-white p-1"><X className="w-6 h-6" /></button>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto space-y-4">
+            <div className="p-6 overflow-y-auto space-y-4">
               <div className="flex items-center gap-4 border-b border-slate-800 pb-4 mb-4">
                 <div className="text-4xl font-black text-white">4.2</div>
                 <div>
@@ -363,15 +469,15 @@ export default function App() {
         </div>
       )}
 
-      {/* --- BOOKING MODAL --- */}
+      {}
       {bookingModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-xl overflow-hidden animate-in fade-in zoom-in duration-200 mt-10 md:mt-0 shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
-            <div className="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-xl overflow-hidden animate-in fade-in zoom-in duration-200 mt-10 md:mt-0 shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex flex-col max-h-[90vh]">
+            <div className="bg-slate-950 p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
               <h3 className="text-lg md:text-xl font-bold">Book Your Repair</h3>
-              <button onClick={() => setBookingModalOpen(false)} className="text-slate-400 hover:text-white"><X className="w-6 h-6" /></button>
+              <button onClick={() => setBookingModalOpen(false)} className="text-slate-400 hover:text-white p-1"><X className="w-6 h-6" /></button>
             </div>
-            <div className="p-4 md:p-6 max-h-[80vh] overflow-y-auto">
+            <div className="p-4 md:p-6 overflow-y-auto">
               {selectedService && (
                 <div className="mb-6 bg-slate-800/50 p-3 md:p-4 rounded-xl border border-slate-700 flex items-center gap-4">
                   <div>
